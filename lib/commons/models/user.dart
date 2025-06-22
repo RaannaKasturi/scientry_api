@@ -8,7 +8,7 @@ class UserModel {
   final String? email;
   final String? avatar;
   final String? bio;
-  final String? refreshToken;
+  final String? accessToken;
   final bool? isEmailVerified;
   final String? createdAt;
   final String? updatedAt;
@@ -25,7 +25,7 @@ class UserModel {
     this.email,
     this.avatar,
     this.bio,
-    this.refreshToken,
+    this.accessToken,
     this.isEmailVerified,
     this.createdAt,
     this.updatedAt,
@@ -43,7 +43,7 @@ class UserModel {
     String? email,
     String? avatar,
     String? bio,
-    String? refreshToken,
+    String? accessToken,
     bool? isEmailVerified,
     String? createdAt,
     String? updatedAt,
@@ -59,7 +59,7 @@ class UserModel {
     email: email ?? this.email,
     avatar: avatar ?? this.avatar,
     bio: bio ?? this.bio,
-    refreshToken: refreshToken ?? this.refreshToken,
+    accessToken: accessToken ?? this.accessToken,
     isEmailVerified: isEmailVerified ?? this.isEmailVerified,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -82,7 +82,7 @@ class UserModel {
     email: json["email"],
     avatar: json["avatar"],
     bio: json["bio"],
-    refreshToken: json["refreshToken"],
+    accessToken: json["accessToken"],
     isEmailVerified: json["isEmailVerified"].toString().toLowerCase() == 'true',
     createdAt: json["createdAt"],
     updatedAt: json["updatedAt"],
@@ -100,7 +100,7 @@ class UserModel {
     "email": email,
     "avatar": avatar,
     "bio": bio,
-    "refreshToken": refreshToken,
+    "accessToken": accessToken,
     "isEmailVerified": isEmailVerified,
     "createdAt": createdAt,
     "updatedAt": updatedAt,

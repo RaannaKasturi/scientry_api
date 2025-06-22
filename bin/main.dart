@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:scientry_api/auth/login/api.dart';
 import 'package:scientry_api/auth/register/api.dart';
 import 'package:scientry_api/service/executor_manager.dart';
 import 'package:scientry_api/service/jwt_manager.dart';
@@ -19,8 +20,8 @@ Middleware verifyJwtMiddleware({bool protectAll = true}) {
       if (authHeader == null || !authHeader.startsWith('Bearer ')) {
         return Response.forbidden(
           jsonEncode({
-            "statusCode": -1,
-            "message": "Missing or invalid Authorization header",
+            "errorCode": -1,
+            "errorMessage": "Missing or invalid Authorization header",
           }),
         );
       }
@@ -29,13 +30,13 @@ Middleware verifyJwtMiddleware({bool protectAll = true}) {
       final jwt = JWTManager.verifyAccessToken(token);
       if (jwt == null) {
         return Response.forbidden(
-          jsonEncode({"statusCode": -1, "message": "Invalid or expired token"}),
+          jsonEncode({
+            "errorCode": -1,
+            "errorMessage": "Invalid or expired token",
+          }),
         );
       }
-
-      // Optionally attach claims to request
       final updatedRequest = request.change(context: {'claims': jwt.payload});
-
       return innerHandler(updatedRequest);
     };
   };
@@ -47,7 +48,9 @@ bool _isNotProtected(String path) {
 }
 
 Future<void> main() async {
-  final router = Router()..post('/api/auth/register', RegisterApi().handler);
+  final router = Router()
+    ..post('/api/auth/register', RegisterHandler().register)
+    ..post("/api/auth/login", LoginHandler().handler);
 
   final handler = Pipeline()
       .addMiddleware(logRequests())

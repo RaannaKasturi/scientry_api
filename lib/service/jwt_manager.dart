@@ -1,34 +1,31 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:scientry_api/service/secrets_manager.dart';
 
 class JWTManager {
-  static const String _accessSecret = String.fromEnvironment(
-    'ACCESS_SECRET',
-    defaultValue: 'access-secret-key',
-  );
-  static const String _refreshSecret = String.fromEnvironment(
-    'REFRESH_SECRET',
-    defaultValue: 'refresh-secret-key',
-  );
+  static final String _accessSecret = SecretsManager.accessSecret;
+  static final String _refreshSecret = SecretsManager.refreshSecret;
 
   static const Duration _accessExpiry = Duration(days: 356);
   static const Duration _refreshExpiry = Duration(days: 356 * 10);
 
-  /// Generate access & refresh tokens
-  static Map<String, String> generateTokens({
-    required String userId,
-    String? role,
-  }) {
-    final payload = {'sub': userId, if (role != null) 'role': role};
-
-    final accessToken = JWT(
+  /// Generate access token only
+  static String generateAccessToken({required String userId}) {
+    final payload = {'sub': userId};
+    return JWT(
       payload,
+      issuer: "SCIENTRY-BINARYBIOLOGY",
+      jwtId: DateTime.now().millisecondsSinceEpoch.toString(),
     ).sign(SecretKey(_accessSecret), expiresIn: _accessExpiry);
+  }
 
-    final refreshToken = JWT(
+  /// Generate refresh token only
+  static String generateRefreshToken({required String userId}) {
+    final payload = {'sub': userId};
+    return JWT(
       payload,
+      issuer: "SCIENTRY-BINARYBIOLOGY",
+      jwtId: DateTime.now().millisecondsSinceEpoch.toString(),
     ).sign(SecretKey(_refreshSecret), expiresIn: _refreshExpiry);
-
-    return {'accessToken': accessToken, 'refreshToken': refreshToken};
   }
 
   /// Verify Access Token

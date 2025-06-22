@@ -1,16 +1,14 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:scientry_api/commons/models/user.dart';
 import 'package:scientry_api/service/dio_instance.dart';
+import 'package:scientry_api/service/secrets_manager.dart';
 
 class GsheetsManager {
   // This class is responsible for managing Google Sheets operations.
 
-  static const String _fetchUsersEndpoint =
-      "https://script.google.com/macros/s/AKfycbwCBnLpgE-LA9Vey6tNVPbO5FWlva6zORgoPpmOIXSCxu3qPUXhNsVL06GPbM1b8iVapg/exec";
-  static const String _addUpdateUsersEndpoint =
-      "https://script.google.com/macros/s/AKfycbxFwd5B0cInrDBuAO4eCo6Ac7T0Hu8pOpXuSCBMWpCKDurWNDT4EBmrRdFgibClaPiSPQ/exec";
+  static final String _fetchUsersEndpoint = SecretsManager.fetchUsersEndpoint;
+  static final String _addUpdateUsersEndpoint =
+      SecretsManager.addUpdateUsersEndpoint;
 
   Future<UserModel?> getUserByField({
     required String field,
@@ -66,7 +64,6 @@ class GsheetsManager {
           return false;
         }
       } else {
-        print("Response from GSheets: ${response.data}");
         if (response.data['result'] == 'added' ||
             response.data['result'] == 'updated') {
           return true;
