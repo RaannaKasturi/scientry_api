@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:scientry_api/auth/register/model.dart';
 import 'package:scientry_api/commons/models/user.dart';
+import 'package:scientry_api/service/email_manager.dart';
 import 'package:scientry_api/service/gsheets_manager.dart';
 import 'package:scientry_api/service/jwt_manager.dart';
 import 'package:scientry_api/service/password_manager.dart';
@@ -11,6 +12,7 @@ import 'package:uuid/uuid.dart';
 class RegisterHandler {
   GsheetsManager gsheetsManager = GsheetsManager();
   PasswordManager passwordManager = PasswordManager();
+  EmailManager emailManager = EmailManager();
 
   Future<Response> register(Request request) async {
     try {
@@ -137,8 +139,8 @@ class RegisterHandler {
         bio: '',
         accessToken: JWTManager.generateRefreshToken(userId: userId),
         isEmailVerified: false,
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().toIso8601String(),
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        updatedAt: DateTime.now().millisecondsSinceEpoch,
         fcmToken: '',
         subscribedTopics: "",
         bookmarkedPosts: "",
@@ -159,6 +161,12 @@ class RegisterHandler {
           headers: {'Content-Type': 'application/json'},
         );
       }
+
+      // send verification email
+      await emailManager.sendVerificationEmail(
+        name: newUser.name!,
+        email: newUser.email!,
+      );
 
       // Return success
       return Response.ok(

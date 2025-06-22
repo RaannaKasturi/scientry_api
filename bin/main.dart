@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:scientry_api/auth/email_verification/api.dart';
 import 'package:scientry_api/auth/login/api.dart';
 import 'package:scientry_api/auth/register/api.dart';
+import 'package:scientry_api/auth/reset_password/api.dart';
 import 'package:scientry_api/service/executor_manager.dart';
 import 'package:scientry_api/service/jwt_manager.dart';
 import 'package:shelf/shelf.dart';
@@ -16,13 +18,14 @@ Middleware verifyJwtMiddleware({bool protectAll = true}) {
         return innerHandler(request);
       }
 
-      final authHeader = request.headers['Authorization'];
+      final authHeader = request.headers['X-Scientry-Authorization'];
       if (authHeader == null || !authHeader.startsWith('Bearer ')) {
         return Response.forbidden(
           jsonEncode({
             "errorCode": -1,
             "errorMessage": "Missing or invalid Authorization header",
           }),
+          headers: {'Content-Type': 'application/json'},
         );
       }
 
@@ -34,6 +37,7 @@ Middleware verifyJwtMiddleware({bool protectAll = true}) {
             "errorCode": -1,
             "errorMessage": "Invalid or expired token",
           }),
+          headers: {'Content-Type': 'application/json'},
         );
       }
       final updatedRequest = request.change(context: {'claims': jwt.payload});
@@ -43,14 +47,24 @@ Middleware verifyJwtMiddleware({bool protectAll = true}) {
 }
 
 bool _isNotProtected(String path) {
-  const nonProtectedPrefixes = ['api/auth'];
+  const nonProtectedPrefixes = ['api/auth', 'verify-email'];
   return nonProtectedPrefixes.any((prefix) => path.startsWith(prefix));
 }
 
 Future<void> main() async {
   final router = Router()
     ..post('/api/auth/register', RegisterHandler().register)
-    ..post("/api/auth/login", LoginHandler().handler);
+    ..post("/api/auth/login", LoginHandler().handler)
+    ..post(
+      "/api/auth/request-email-verification",
+      EmailVerificationHandler().requestEmailVerification,
+    )
+    ..get('/verify-email', EmailVerificationHandler().verifyEmail)
+    ..post(
+      '/api/auth/request-reset-password',
+      ResetPasswordHandler().sendResetPassCode,
+    )
+    ..post('/api/auth/reset-password', ResetPasswordHandler().resetPassword);
 
   final handler = Pipeline()
       .addMiddleware(logRequests())

@@ -10,8 +10,8 @@ class UserModel {
   final String? bio;
   final String? accessToken;
   final bool? isEmailVerified;
-  final String? createdAt;
-  final String? updatedAt;
+  final int? createdAt;
+  final int? updatedAt;
   final String? fcmToken;
   final String? subscribedTopics;
   final String? bookmarkedPosts;
@@ -45,8 +45,8 @@ class UserModel {
     String? bio,
     String? accessToken,
     bool? isEmailVerified,
-    String? createdAt,
-    String? updatedAt,
+    int? createdAt,
+    int? updatedAt,
     String? fcmToken,
     String? subscribedTopics,
     String? bookmarkedPosts,
