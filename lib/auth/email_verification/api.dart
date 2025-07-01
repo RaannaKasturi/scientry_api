@@ -40,7 +40,7 @@ class EmailVerificationHandler {
           field: "email",
           value: isVerified,
         );
-        if (user == null) {
+        if (user == null || user.isDeleted == true) {
           return Response.notFound(
             jsonEncode({"errorCode": -1, "errorMessage": "User not found."}),
             headers: {'Content-Type': 'application/json'},
@@ -121,7 +121,7 @@ class EmailVerificationHandler {
         field: "email",
         value: email,
       );
-      if (user == null) {
+      if (user == null || user.isDeleted == true) {
         return Response.notFound(
           jsonEncode({"errorCode": -1, "errorMessage": "User not found."}),
           headers: {'Content-Type': 'application/json'},
@@ -132,11 +132,6 @@ class EmailVerificationHandler {
             "errorCode": 0,
             "errorMessage": "Email is already verified.",
           }),
-          headers: {'Content-Type': 'application/json'},
-        );
-      } else if (user.isDeleted == true) {
-        return Response.notFound(
-          jsonEncode({"errorCode": -1, "errorMessage": "User not found."}),
           headers: {'Content-Type': 'application/json'},
         );
       } else {

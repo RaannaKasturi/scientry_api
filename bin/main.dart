@@ -7,6 +7,7 @@ import 'package:scientry_api/auth/register/api.dart';
 import 'package:scientry_api/auth/reset_password/api.dart';
 import 'package:scientry_api/service/executor_manager.dart';
 import 'package:scientry_api/service/jwt_manager.dart';
+import 'package:scientry_api/status/status.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -47,12 +48,13 @@ Middleware verifyJwtMiddleware({bool protectAll = true}) {
 }
 
 bool _isNotProtected(String path) {
-  const nonProtectedPrefixes = ['api/auth', 'verify-email'];
+  const nonProtectedPrefixes = ['api/auth', 'verify-email', 'api/status'];
   return nonProtectedPrefixes.any((prefix) => path.startsWith(prefix));
 }
 
 Future<void> main() async {
   final router = Router()
+    ..get('/api/status', StatusHandler().getStatus)
     ..post('/api/auth/register', RegisterHandler().register)
     ..post("/api/auth/login", LoginHandler().handler)
     ..post(

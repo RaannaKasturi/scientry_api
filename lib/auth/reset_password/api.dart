@@ -21,8 +21,7 @@ class ResetPasswordHandler {
         return Response.badRequest(
           body: jsonEncode({
             "errorCode": -1,
-            "errorMessage":
-                "Email/Username, Code and Password cannot be empty.",
+            "errorMessage": "Email/Username cannot be empty.",
           }),
           headers: {'Content-Type': 'application/json'},
         );
@@ -40,13 +39,8 @@ class ResetPasswordHandler {
         );
       }
 
-      if (user == null) {
+      if (user == null || user.isDeleted == true) {
         return Response.notFound(
-          jsonEncode({"errorCode": -1, "errorMessage": "User not found."}),
-          headers: {'Content-Type': 'application/json'},
-        );
-      } else if (user.isDeleted == true) {
-        return Response.forbidden(
           jsonEncode({"errorCode": -1, "errorMessage": "User not found."}),
           headers: {'Content-Type': 'application/json'},
         );
@@ -176,13 +170,8 @@ class ResetPasswordHandler {
         );
       }
 
-      if (user == null) {
+      if (user == null || user.isDeleted == true) {
         return Response.notFound(
-          jsonEncode({"errorCode": -1, "errorMessage": "User not found."}),
-          headers: {'Content-Type': 'application/json'},
-        );
-      } else if (user.isDeleted == true) {
-        return Response.forbidden(
           jsonEncode({"errorCode": -1, "errorMessage": "User not found."}),
           headers: {'Content-Type': 'application/json'},
         );

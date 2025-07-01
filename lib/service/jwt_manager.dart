@@ -10,10 +10,10 @@ class JWTManager {
       SecretsManager.emailVerificationSecret;
   static final String resetPasswordSecret = SecretsManager.resetPasswordSecret;
 
-  static const Duration _accessExpiry = Duration(days: 356);
-  static const Duration _refreshExpiry = Duration(days: 356 * 10);
+  static const Duration _accessExpiry = Duration(days: 365);
+  static const Duration _refreshExpiry = Duration(days: 365 * 10);
   static const Duration _emailVerificationExpiry = Duration(days: 1);
-  static const Duration _resetPasswordExpiry = Duration(minutes: 5);
+  static const Duration _resetPasswordExpiry = Duration(minutes: 3);
 
   /// Generate access token only
   static String generateAccessToken({required String userId}) {
@@ -110,7 +110,7 @@ class JWTManager {
       final jwt = JWT.verify(token, SecretKey(resetPasswordSecret));
       return jwt.payload['code'] == submittedCode;
     } catch (e) {
-      throw Exception('Invalid or expired token');
+      return false;
     }
   }
 }
