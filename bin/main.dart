@@ -73,7 +73,7 @@ Future<void> main() async {
       .addMiddleware(verifyJwtMiddleware(protectAll: false))
       .addHandler(router.call);
 
-  final port = int.parse(Platform.environment['PORT'] ?? '80');
+  final port = int.parse(Platform.environment['PORT'] ?? '8080');
   final server = await serve(handler, InternetAddress.anyIPv4, port);
   print('Server running at http://localhost:${server.port}');
 
